@@ -1,5 +1,3 @@
-#!/bin/zsh
-
 files=( images/*.jpg )
 
 for f in $files; do
