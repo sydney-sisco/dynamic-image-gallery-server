@@ -47,6 +47,7 @@ const requestListener = function (req, res) {
 
 function letsencryptOptions(domain) {
   const path = '/etc/letsencrypt/live/';
+  console.log(path + domain + '/privkey.pem');
   return {
     key: fs.readFileSync(path + domain + '/privkey.pem'),
     cert: fs.readFileSync(path + domain + '/cert.pem'),
