@@ -1,3 +1,4 @@
+require('dotenv').config()
 var path = require('path');
 var fs = require('fs');
 var dir = path.join(__dirname, 'public');
@@ -42,16 +43,39 @@ const requestListener = function (req, res) {
     res.statusCode = 404;
     res.end('Not found');
   });
-}; 
+};
 
+function letsencryptOptions(domain) {
+  const path = '/etc/letsencrypt/live/';
+  return {
+    key: fs.readFileSync(path + domain + '/privkey.pem'),
+    cert: fs.readFileSync(path + domain + '/cert.pem'),
+    ca: fs.readFileSync(path + domain + '/chain.pem')
+  };
+}
 
-const server = require("http").createServer(requestListener);
+// https or http based on env
+let server;
+if (process.env.NODE_ENV === 'production') {
+  const https = require('https');
+  // const options = letsencryptOptions('example.com');
+  // https.createServer(options, requestListener).listen(443);
+
+  const options = letsencryptOptions(process.env.HOSTNAME);
+  server = require("https").createServer(options, requestListener);
+
+} else {
+  const http = require('http');
+  http.createServer(requestListener).listen(8080);
+
+  server = require("http").createServer(requestListener);
+}
+
 const io = require("socket.io")(server, {
   cors: {
     origin: "*",
   },
 });
-
 
 const PORT = 4000;
 
