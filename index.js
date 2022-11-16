@@ -87,7 +87,9 @@ chokidar.watch('./public').on('add', (path) => {
   console.log(path);
   const fileName = path.split('/').pop();
   console.log(fileName);
-  io.emit('newImage', fileName); // emit an event to all connected sockets
+  if (!fileName.includes('filepart')) {
+    io.emit('newImage', fileName); // emit an event to all connected sockets
+  }
 });
 
 io.on("connection", (socket) => {});
